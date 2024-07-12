@@ -1,0 +1,62 @@
+import requests
+import json
+import random
+
+from rest_framework import serializers
+
+from core.models import OtpRequest
+
+# create your serializers here
+
+class RequestSendOtpSerializer(serializers.Serializer):
+    id = serializers.UUIDField(read_only=True)
+    mobile = serializers.CharField(max_length=11, allow_null=False)
+
+    def create(self, validated_data):
+        req_otp = OtpRequest.objects.create(
+            mobile=validated_data['mobile'],
+            code=self._random_code()
+        )
+        req_otp.save()
+
+        request_headers = {
+        "accept": "application/json",
+        "content-type": "application/json",
+        }
+
+        data = {
+            "UserName": "09123344307",
+            "Password": "435046",
+            "From": "10002147",
+            "To": req_otp.mobile,
+            "Message": f"کد بازیابی شما : {req_otp.code}",
+        }
+
+        res = requests.post(
+            url='https://webone-sms.ir/SMSInOutBox/Send',
+            data=json.dumps(data),
+            headers=request_headers
+        )
+
+        return req_otp
+    
+    def _random_code(self):
+        return int(random.randint(10000, 99999))
+    
+
+class VerifyOtpSerializer(serializers.Serializer):
+    id = serializers.UUIDField(allow_null=False)
+    otp_code = serializers.CharField(max_length=5)
+    mobile = serializers.CharField(max_length=11)
+
+
+    def validate(self, attrs):
+        try:
+            otp_req = OtpRequest.objects.get(
+                id=attrs['id'],
+                code=attrs['otp_code']
+            )
+        except OtpRequest.DoesNotExist:
+            raise serializers.ValidationError("serializer error")
+            
+        return super().validate(attrs)

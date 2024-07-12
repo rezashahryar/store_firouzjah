@@ -40,6 +40,8 @@ INSTALLED_APPS = [
 
     # third party packages
     'rest_framework',
+    'rest_framework.authtoken',
+    'drf_yasg',
 
     # local apps
     'core.apps.CoreConfig',

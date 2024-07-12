@@ -15,7 +15,7 @@ class CustomUserAdmin(UserAdmin):
     fieldsets = (
         ('Authentication', {
             "fields": (
-                'username', 'email', 'password', 'first_name', 'last_name'
+                'username', 'email', 'password', 'first_name', 'last_name', 'mobile'
             ),
         }),
         ('group permissions', {
@@ -42,3 +42,5 @@ class CustomUserAdmin(UserAdmin):
             'fields': ('username', 'email', 'password1', 'password2', 'is_staff', 'is_active', 'is_superuser')
         }),
     )
+
+admin.site.register(models.OtpRequest)
