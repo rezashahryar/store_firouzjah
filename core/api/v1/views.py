@@ -15,7 +15,7 @@ class SendOtpView(generics.CreateAPIView):
     serializer_class = RequestSendOtpSerializer
 
 
-class CheckOtp(APIView):
+class CheckOtp(generics.GenericAPIView):
     serializer_class = VerifyOtpSerializer
 
     def post(self, request):
@@ -53,7 +53,5 @@ class CheckOtp(APIView):
             return Response({
                 "token": str(token)
             })
-
-
 
         return Response(status=status.HTTP_200_OK)
