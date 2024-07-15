@@ -1,3 +1,5 @@
+import random
+
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 
@@ -22,12 +24,23 @@ class Mantaghe(models.Model):
 
     def __str__(self):
         return self.name
+    
+
+def random_code():
+
+    while True:
+        code = random.randint(100000, 999999)
+
+        if Store.objects.filter(code=code).exists():
+            continue
+        return code
 
 
 class AbstractStore(models.Model):
     mobile_number = models.CharField(max_length=11)
     phone_number = models.CharField(max_length=11)
     email = models.EmailField()
+    code = models.CharField(max_length=6, unique=True, default=random_code)
     
     shomare_shaba = models.CharField(max_length=26)
 
