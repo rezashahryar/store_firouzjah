@@ -61,6 +61,7 @@ class Store(AbstractStore):
 
 class CategoryProduct(models.Model):
     name = models.CharField(max_length=255)
+    image = models.ImageField(upload_to='category_images/%Y/%m/%d/')
     slug = models.SlugField()
 
     def __str__(self):
