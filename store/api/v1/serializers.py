@@ -5,6 +5,27 @@ from store import models
 # create your serializers here
 
 
+class ProvinceSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = models.Province
+        fields = ['name']
+
+
+class CitySerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = models.City
+        fields = ['name']
+
+
+class MantagheSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = models.Mantaghe
+        fields = ['name']
+
+
 class ProductSerializer(serializers.ModelSerializer):
     category = serializers.StringRelatedField()
 
@@ -27,6 +48,7 @@ class StoreSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.Store
         fields = [
+            "title",
             "mobile_number",
             "phone_number",
             "email",
@@ -47,3 +69,10 @@ class StoreSerializer(serializers.ModelSerializer):
             "code",
         ]
         read_only_fields = ["code"]
+
+    def to_representation(self, instance):
+        rep = super().to_representation(instance)
+        rep['province'] = ProvinceSerializer(instance.province).data
+        rep['city'] = CitySerializer(instance.city).data
+        rep['mantaghe'] = MantagheSerializer(instance.mantaghe).data
+        return rep
