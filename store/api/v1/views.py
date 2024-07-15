@@ -2,7 +2,7 @@ from rest_framework import generics
 
 from store import models
 
-from .serializers import ProductSerializer
+from .serializers import ProductSerializer, StoreSerializer
 
 # create your views here
 
@@ -10,3 +10,8 @@ from .serializers import ProductSerializer
 class ProductListApiView(generics.ListAPIView):
     queryset = models.Product.objects.select_related('category').all()
     serializer_class = ProductSerializer
+
+
+class StoreCreateApiView(generics.CreateAPIView):
+    queryset = models.Store.objects.all()
+    serializer_class = StoreSerializer

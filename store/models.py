@@ -52,14 +52,14 @@ class AbstractStore(models.Model):
     address = models.CharField(max_length=555)
     post_code = models.CharField(max_length=10)
 
-    parvane_kasb = models.FileField(upload_to=f'parvane_kast__{mobile_number}/%Y/%m/%d/')
-    tasvire_personely = models.ImageField(upload_to=f'tasvire_personely__{mobile_number}/%Y/%m/%d/')
-    kart_melli = models.ImageField(upload_to=f'kart_melli__{mobile_number}/%Y/%m/%d/')
-    shenasname = models.ImageField(upload_to=f'tasvire_shenasname__{mobile_number}/%Y/%m/%d/')
-    logo = models.ImageField(upload_to=f'logo__{mobile_number}/%Y/%m/%d/')
-    roozname_rasmi_alamat = models.FileField(upload_to=f'roozname_rasmi_alamat__{mobile_number}/%Y/%m/%d/')
+    parvane_kasb = models.FileField(upload_to='parvane_kasb__/%Y/%m/%d/')
+    tasvire_personely = models.ImageField(upload_to='tasvire_personely__/%Y/%m/%d/')
+    kart_melli = models.ImageField(upload_to='kart_melli__/%Y/%m/%d/')
+    shenasname = models.ImageField(upload_to='tasvire_shenasname__/%Y/%m/%d/')
+    logo = models.ImageField(upload_to='logo__/%Y/%m/%d/')
+    roozname_rasmi_alamat = models.FileField(upload_to='roozname_rasmi_alamat__/%Y/%m/%d/')
 
-    gharardad = models.FileField(upload_to=f'gharardad__{mobile_number}/%Y/%m/%d/')
+    gharardad = models.FileField(upload_to='gharardad__/%Y/%m/%d/')
 
     class Meta:
         abstract = True
