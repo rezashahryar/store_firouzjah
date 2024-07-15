@@ -44,6 +44,8 @@ class Product(models.Model):
 
     title_farsi = models.CharField(max_length=255)
     title_english = models.CharField(max_length=255)
+
+    slug = models.SlugField()
     
     product_code = models.CharField(max_length=100)
     product_model = models.CharField(max_length=255)

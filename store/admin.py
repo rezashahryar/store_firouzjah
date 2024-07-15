@@ -12,12 +12,12 @@ class StoreAdmin(admin.ModelAdmin):
 
 @admin.register(models.CategoryProduct)
 class CategoryProductAdmin(admin.ModelAdmin):
-    ...
+    prepopulated_fields = {'slug': ('name', )}
 
 
 @admin.register(models.SubCategoryProduct)
 class SubCategoryProductAdmin(admin.ModelAdmin):
-    ...
+    prepopulated_fields = {'slug': ('name', )}
 
 
 @admin.register(models.ProductType)
@@ -27,4 +27,4 @@ class ProductTypeAdmin(admin.ModelAdmin):
 
 @admin.register(models.Product)
 class ProductAdmin(admin.ModelAdmin):
-    ...
+    prepopulated_fields = {'slug': ('title_english', )}
