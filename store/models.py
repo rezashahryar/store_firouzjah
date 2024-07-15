@@ -1,4 +1,5 @@
 from django.db import models
+from django.utils.translation import gettext_lazy as _
 
 # create your models here
 
@@ -37,6 +38,10 @@ class ProductType(models.Model):
 
 
 class Product(models.Model):
+
+    class StatusOriginaly(models.TextChoices):
+        Original = "o", _("اصل ، اوریجینال")
+
     store = models.ForeignKey(Store, on_delete=models.CASCADE, related_name='products')
 
     category = models.ForeignKey(CategoryProduct, on_delete=models.CASCADE, related_name='products')
@@ -50,7 +55,7 @@ class Product(models.Model):
     product_code = models.CharField(max_length=100)
     product_model = models.CharField(max_length=255)
 
-    status_originaly = models.CharField(max_length=10)
+    status_originaly = models.CharField(max_length=10, choices=StatusOriginaly.choices)
     product_warranty = models.BooleanField()
 
     sending_method = models.CharField(max_length=10)
