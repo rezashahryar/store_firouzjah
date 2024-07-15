@@ -8,5 +8,5 @@ from .serializers import ProductSerializer
 
 
 class ProductListApiView(generics.ListAPIView):
-    queryset = models.Product.objects.all()
+    queryset = models.Product.objects.select_related('category').all()
     serializer_class = ProductSerializer
