@@ -46,6 +46,8 @@ class AbstractStore(models.Model):
     logo = models.ImageField(upload_to=f'logo__{mobile_number}/%Y/%m/%d/')
     roozname_rasmi_alamat = models.FileField(upload_to=f'roozname_rasmi_alamat__{mobile_number}/%Y/%m/%d/')
 
+    gharardad = models.FileField(upload_to=f'gharardad__{mobile_number}/%Y/%m/%d/')
+
     class Meta:
         abstract = True
 
