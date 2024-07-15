@@ -3,8 +3,54 @@ from django.utils.translation import gettext_lazy as _
 
 # create your models here
 
+class Province(models.Model):
+    name = models.CharField(max_length=255)
 
-class Store(models.Model):
+    def __str__(self):
+        return self.name
+
+
+class City(models.Model):
+    name = models.CharField(max_length=255)
+
+    def __str__(self):
+        return self.name
+    
+
+class Mantaghe(models.Model):
+    name = models.CharField(max_length=255)
+
+    def __str__(self):
+        return self.name
+
+
+class AbstractStore(models.Model):
+    mobile_number = models.CharField(max_length=11)
+    phone_number = models.CharField(max_length=11)
+    email = models.EmailField()
+    
+    shomare_shaba = models.CharField(max_length=26)
+
+    province = models.ForeignKey(Province, on_delete=models.CASCADE, related_name='stores')
+    city = models.ForeignKey(City, on_delete=models.CASCADE, related_name='stores')
+    mantaghe = models.ForeignKey(Mantaghe, on_delete=models.CASCADE, related_name='stores')
+    mahalle = models.CharField(max_length=255)
+
+    address = models.CharField(max_length=555)
+    post_code = models.CharField(max_length=10)
+
+    parvane_kasb = models.FileField(upload_to=f'parvane_kast__{mobile_number}/%Y/%m/%d/')
+    tasvire_personely = models.ImageField(upload_to=f'tasvire_personely__{mobile_number}/%Y/%m/%d/')
+    kart_melli = models.ImageField(upload_to=f'kart_melli__{mobile_number}/%Y/%m/%d/')
+    shenasname = models.ImageField(upload_to=f'tasvire_shenasname__{mobile_number}/%Y/%m/%d/')
+    logo = models.ImageField(upload_to=f'logo__{mobile_number}/%Y/%m/%d/')
+    roozname_rasmi_alamat = models.FileField(upload_to=f'roozname_rasmi_alamat__{mobile_number}/%Y/%m/%d/')
+
+    class Meta:
+        abstract = True
+
+
+class Store(AbstractStore):
     title = models.CharField(max_length=255)
 
     def __str__(self):
