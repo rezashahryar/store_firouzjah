@@ -28,3 +28,18 @@ class ProductTypeAdmin(admin.ModelAdmin):
 @admin.register(models.Product)
 class ProductAdmin(admin.ModelAdmin):
     prepopulated_fields = {'slug': ('title_english', )}
+
+
+@admin.register(models.Province)
+class ProvinceAdmin(admin.ModelAdmin):
+    ...
+
+
+@admin.register(models.City)
+class CityAdmin(admin.ModelAdmin):
+    ...
+
+
+@admin.register(models.Mantaghe)
+class MantagheAdmin(admin.ModelAdmin):
+    ...
