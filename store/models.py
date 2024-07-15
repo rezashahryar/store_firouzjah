@@ -40,7 +40,13 @@ class ProductType(models.Model):
 class Product(models.Model):
 
     class StatusOriginaly(models.TextChoices):
-        Original = "o", _("اصل ، اوریجینال")
+        ORIGINAL = "o", _("اصل ، اوریجینال")
+
+    class SendingMethod(models.TextChoices):
+        PISHTAZ = "pish", _("پیشتاز")
+        TIPAX = "tip", _("تیپاکس")
+        BAARBARY = "bar", _("باربری")
+        PEYK_MOTOR = "peyk", _("پیک موتوری")
 
     store = models.ForeignKey(Store, on_delete=models.CASCADE, related_name='products')
 
@@ -58,7 +64,7 @@ class Product(models.Model):
     status_originaly = models.CharField(max_length=10, choices=StatusOriginaly.choices)
     product_warranty = models.BooleanField()
 
-    sending_method = models.CharField(max_length=10)
+    sending_method = models.CharField(max_length=4, choices=SendingMethod.choices)
 
     def __str__(self):
         return self.title_farsi
