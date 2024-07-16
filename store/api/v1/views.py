@@ -1,4 +1,5 @@
 from rest_framework import generics
+from django.db.models import Prefetch
 
 from store import models
 
@@ -8,7 +9,10 @@ from .serializers import ProductSerializer, HaghighyStoreSerializer, HoghoughySt
 
 
 class ProductListApiView(generics.ListAPIView):
-    queryset = models.Product.objects.select_related('category').all()
+    queryset = models.Product.objects.select_related('category').prefetch_related(Prefetch(
+        'property',
+        queryset=models.SetProductProperty.objects.select_related('property')
+    )).all()
     serializer_class = ProductSerializer
 
 

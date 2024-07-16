@@ -53,3 +53,13 @@ class CityAdmin(admin.ModelAdmin):
 @admin.register(models.Mantaghe)
 class MantagheAdmin(admin.ModelAdmin):
     ...
+
+
+@admin.register(models.ProductProperties)
+class ProductPropertiesAdmin(admin.ModelAdmin):
+    ...
+
+
+@admin.register(models.SetProductProperty)
+class SetProductProperties(admin.ModelAdmin):
+    ...

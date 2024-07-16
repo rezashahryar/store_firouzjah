@@ -97,6 +97,21 @@ class HoghoughyStore(Store):
 
     def __str__(self):
         return self.company_name
+    
+class ProductProperties(models.Model):
+    title = models.CharField(max_length=100)
+
+    def __str__(self):
+        return self.title
+    
+
+class SetProductProperty(models.Model):
+    product = models.ForeignKey('Product', on_delete=models.CASCADE, related_name='property')
+    property = models.ForeignKey(ProductProperties, on_delete=models.CASCADE)
+    value = models.CharField(max_length=250)
+
+    def __str__(self):
+        return f'property {self.property} for {self.product} with value {self.value}'
 
 
 class CategoryProduct(models.Model):

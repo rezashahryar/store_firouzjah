@@ -26,6 +26,14 @@ class MantagheSerializer(serializers.ModelSerializer):
         fields = ['name']
 
 
+class ProductPropertySerializer(serializers.ModelSerializer):
+    property = serializers.StringRelatedField()
+
+    class Meta:
+        model = models.SetProductProperty
+        fields = ['property', 'value']
+
+
 class ProductSerializer(serializers.ModelSerializer):
     category = serializers.StringRelatedField()
 
@@ -40,7 +48,14 @@ class ProductSerializer(serializers.ModelSerializer):
             "status_originaly",
             "product_warranty",
             "sending_method",
+            "property"
         ]
+
+    def to_representation(self, instance):
+        rep = super().to_representation(instance)
+        rep['property'] = ProductPropertySerializer(instance.property.all(), many=True).data
+
+        return rep
 
 
 class HaghighyStoreSerializer(serializers.ModelSerializer):
