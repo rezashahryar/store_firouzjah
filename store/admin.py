@@ -35,9 +35,24 @@ class ProductTypeAdmin(admin.ModelAdmin):
     ...
 
 
+@admin.register(models.BaseProduct)
+class BaseProductAdmin(admin.ModelAdmin):
+    prepopulated_fields = {'slug': ('title_english', )}
+
+
+@admin.register(models.Size)
+class SizeAdmin(admin.ModelAdmin):
+    ...
+
+
+@admin.register(models.Color)
+class ColorAdmin(admin.ModelAdmin):
+    ...
+
+
 @admin.register(models.Product)
 class ProductAdmin(admin.ModelAdmin):
-    prepopulated_fields = {'slug': ('title_english', )}
+    ...
 
 
 @admin.register(models.Province)
@@ -61,5 +76,10 @@ class ProductPropertiesAdmin(admin.ModelAdmin):
 
 
 @admin.register(models.SetProductProperty)
-class SetProductProperties(admin.ModelAdmin):
+class SetProductPropertiesAdmin(admin.ModelAdmin):
+    ...
+
+
+@admin.register(models.ProductImage)
+class ProductImageAdmin(admin.ModelAdmin):
     ...

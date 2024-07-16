@@ -5,6 +5,15 @@ from django.utils.translation import gettext_lazy as _
 
 # create your models here
 
+
+class Color(models.Model):
+    name = models.CharField(max_length=255)
+    code_of_color = models.CharField(max_length=16)
+
+    def __str__(self):
+        return self.name
+
+
 class Province(models.Model):
     name = models.CharField(max_length=255)
 
@@ -26,7 +35,7 @@ class Mantaghe(models.Model):
         return self.name
     
 
-def random_code():
+def random_code_store():
 
     while True:
         code = random.randint(100000, 999999)
@@ -46,7 +55,7 @@ class Store(models.Model):
     mobile_number = models.CharField(max_length=11)
     phone_number = models.CharField(max_length=11)
     email = models.EmailField()
-    code = models.CharField(max_length=6, unique=True, default=random_code)
+    code = models.CharField(max_length=6, unique=True, default=random_code_store)
     
     shomare_shaba = models.CharField(max_length=26)
 
@@ -139,9 +148,26 @@ class ProductType(models.Model):
 
     def __str__(self):
         return self.title
+    
+
+def random_code_product():
+
+    while True:
+        code = random.randint(1000, 9999)
+
+        if Store.objects.filter(code=code).exists():
+            continue
+        return code
+    
+
+class Size(models.Model):
+    size = models.CharField(max_length=11)
+
+    def __str__(self):
+        return self.size
 
 
-class Product(models.Model):
+class BaseProduct(models.Model):
 
     class StatusOriginaly(models.TextChoices):
         ORIGINAL = "o", _("اصل ، اوریجینال")
@@ -160,9 +186,11 @@ class Product(models.Model):
     title_farsi = models.CharField(max_length=255)
     title_english = models.CharField(max_length=255)
 
+    description = models.TextField()
+
     slug = models.SlugField()
     
-    product_code = models.CharField(max_length=100)
+    product_code = models.CharField(max_length=4, default=random_code_product)
     product_model = models.CharField(max_length=255)
 
     status_originaly = models.CharField(max_length=10, choices=StatusOriginaly.choices)
@@ -172,3 +200,42 @@ class Product(models.Model):
 
     def __str__(self):
         return self.title_farsi
+    
+
+class Product(models.Model):
+
+    class ProductUnit(models.TextChoices):
+        PAIR = "p", _("جفت")
+
+    product = models.ForeignKey(BaseProduct, on_delete=models.CASCADE, related_name='products')
+    size = models.ForeignKey(Size, on_delete=models.CASCADE, related_name='products')
+    color = models.ForeignKey(Color, on_delete=models.CASCADE, related_name='products')
+    inventory = models.PositiveIntegerField()
+    unit = models.CharField(max_length=3, choices=ProductUnit.choices)
+
+    price = models.IntegerField()
+    price_after_discount = models.IntegerField()
+    discount_percent = models.PositiveIntegerField()
+
+    start_discount_datetime = models.DateTimeField()
+    end_discount_datetime = models.DateTimeField()
+
+    length_package = models.IntegerField()
+    width_package = models.IntegerField()
+    height_package = models.IntegerField()
+    weight_package = models.IntegerField()
+
+    shenase_kala = models.CharField(max_length=14)
+    barcode = models.CharField(max_length=16)
+
+    def __str__(self):
+        return self.product.title_farsi
+    
+
+class ProductImage(models.Model):
+    product = models.ForeignKey(BaseProduct, on_delete=models.CASCADE, related_name='images')
+    image = models.ImageField(upload_to=r'product_images/%Y/%m/%d/')
+    is_cover = models.BooleanField()
+
+    def __str__(self):
+        return self.product.title_farsi
