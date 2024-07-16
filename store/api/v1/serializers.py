@@ -36,6 +36,7 @@ class ProductPropertySerializer(serializers.ModelSerializer):
 
 class ProductSerializer(serializers.ModelSerializer):
     category = serializers.StringRelatedField()
+    sub_category = serializers.StringRelatedField()
 
     class Meta:
         model = models.Product
@@ -43,7 +44,9 @@ class ProductSerializer(serializers.ModelSerializer):
             "title_farsi",
             "title_english",
             "category",
+            "sub_category",
             "product_code",
+            # "inventory",
             "product_model",
             "status_originaly",
             "product_warranty",
