@@ -43,12 +43,12 @@ class ProductSerializer(serializers.ModelSerializer):
         ]
 
 
-class StoreSerializer(serializers.ModelSerializer):
+class HaghighyStoreSerializer(serializers.ModelSerializer):
 
     class Meta:
-        model = models.Store
+        model = models.HaghighyStore
         fields = [
-            "title",
+            "name",
             "mobile_number",
             "phone_number",
             "email",
@@ -67,8 +67,17 @@ class StoreSerializer(serializers.ModelSerializer):
             "roozname_rasmi_alamat",
             "gharardad",
             "code",
+            "full_name",
+            "birth_date",
+            "name_father",
+            "code_melli",
+            "shomare_shenasname",
+            "store_type",
         ]
         read_only_fields = ["code"]
+        # extra_kwargs = {
+        #     'name': {'required': True}
+        # }
 
     def to_representation(self, instance):
         rep = super().to_representation(instance)
@@ -76,3 +85,36 @@ class StoreSerializer(serializers.ModelSerializer):
         rep['city'] = CitySerializer(instance.city).data
         rep['mantaghe'] = MantagheSerializer(instance.mantaghe).data
         return rep
+    
+
+class HoghoughyStoreSerializer(serializers.ModelSerializer):
+    
+    class Meta:
+        model = models.HoghoughyStore
+        fields = [
+            "name",
+            "mobile_number",
+            "phone_number",
+            "email",
+            "shomare_shaba",
+            "province",
+            "city",
+            "mantaghe",
+            "mahalle",
+            "address",
+            "post_code",
+            "parvane_kasb",
+            "tasvire_personely",
+            "kart_melli",
+            "shenasname",
+            "logo",
+            "roozname_rasmi_alamat",
+            "gharardad",
+            "code",
+            "ceo_name",
+            "company_name",
+            "date_of_registration",
+            "num_of_registration",
+            "economic_code",
+        ]
+        read_only_fields = ["code"]

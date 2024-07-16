@@ -10,6 +10,16 @@ class StoreAdmin(admin.ModelAdmin):
     ...
 
 
+@admin.register(models.HaghighyStore)
+class HaghighyStoreAdmin(admin.ModelAdmin):
+    ...
+
+
+@admin.register(models.HoghoughyStore)
+class HoghoughyStoreAdmin(admin.ModelAdmin):
+    ...
+
+
 @admin.register(models.CategoryProduct)
 class CategoryProductAdmin(admin.ModelAdmin):
     prepopulated_fields = {'slug': ('name', )}

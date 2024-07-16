@@ -2,7 +2,7 @@ from rest_framework import generics
 
 from store import models
 
-from .serializers import ProductSerializer, StoreSerializer
+from .serializers import ProductSerializer, HaghighyStoreSerializer, HoghoughyStoreSerializer
 
 # create your views here
 
@@ -14,4 +14,9 @@ class ProductListApiView(generics.ListAPIView):
 
 class StoreCreateApiView(generics.CreateAPIView):
     queryset = models.Store.objects.all()
-    serializer_class = StoreSerializer
+
+    def get_serializer_class(self):
+        if self.request.data['store_type'] == 'ha':
+            return HaghighyStoreSerializer
+        elif self.request.data['store_type'] == 'ho':
+            return HoghoughyStoreSerializer

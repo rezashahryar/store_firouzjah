@@ -36,7 +36,13 @@ def random_code():
         return code
 
 
-class AbstractStore(models.Model):
+class Store(models.Model):
+
+    class StoreType(models.TextChoices):
+        HAGHIGHY = "ha", _("حقیقی")
+        HOGHOUGHY = "ho", _("حقوقی")
+
+    name = models.CharField(max_length=255, null=True, blank=True)
     mobile_number = models.CharField(max_length=11)
     phone_number = models.CharField(max_length=11)
     email = models.EmailField()
@@ -61,15 +67,36 @@ class AbstractStore(models.Model):
 
     gharardad = models.FileField(upload_to='gharardad__/%Y/%m/%d/')
 
-    class Meta:
-        abstract = True
-
-
-class Store(AbstractStore):
-    title = models.CharField(max_length=255)
+    store_type = models.CharField(max_length=2, choices=StoreType.choices)
 
     def __str__(self):
-        return self.title
+
+        if self.name:
+            return str(self.name)
+        else:
+            return str(self.mobile_number)
+
+
+class HaghighyStore(Store):
+    full_name = models.CharField(max_length=255)
+    birth_date = models.DateField()
+    name_father = models.CharField(max_length=255)
+    code_melli = models.CharField(max_length=10, unique=True)
+    shomare_shenasname = models.CharField(max_length=255)
+
+    def __str__(self):
+        return str(self.full_name)
+
+
+class HoghoughyStore(Store):
+    ceo_name = models.CharField(max_length=255)
+    company_name = models.CharField(max_length=255)
+    date_of_registration = models.DateField()
+    num_of_registration = models.CharField(max_length=255)
+    economic_code = models.CharField(max_length=255)
+
+    def __str__(self):
+        return self.company_name
 
 
 class CategoryProduct(models.Model):
