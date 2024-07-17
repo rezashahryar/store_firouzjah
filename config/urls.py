@@ -29,6 +29,7 @@ from drf_yasg import openapi
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('auth/', include('core.urls')),
+    path('api-auth/', include('rest_framework.urls')),
     path('store/', include('store.urls')),
 ] + debug_toolbar_urls()
 

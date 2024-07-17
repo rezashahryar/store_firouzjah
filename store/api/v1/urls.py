@@ -16,6 +16,8 @@ cart_items_router.register('items', views.CartItemViewSet, basename='cart-items'
 urlpatterns = [
     path('product/list/', views.ProductListApiView.as_view(), name='product_list'),
     path('store/create/', views.StoreCreateApiView.as_view(), name='store_create'),
+    path('order/list/', views.OrderListApiView.as_view(), name='order'),
+    path('order/create/', views.OrderCreateApiView.as_view(), name='order_create'),
 ]
 
 urlpatterns += router.urls + cart_items_router.urls

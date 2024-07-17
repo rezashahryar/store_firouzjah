@@ -6,7 +6,7 @@ from django.db.models import Prefetch
 
 from store import models
 
-from .serializers import AddCartItemSerializer, CartItemSerializer, CartSerialzier, ChangeCartItemSerializer, CustomerSerializer, ProductSerializer, HaghighyStoreSerializer, HoghoughyStoreSerializer
+from .serializers import AddCartItemSerializer, CartItemSerializer, CartSerialzier, ChangeCartItemSerializer, CustomerSerializer, OrderCreateserializer, OrderSerializer, ProductSerializer, HaghighyStoreSerializer, HoghoughyStoreSerializer
 
 # create your views here
 
@@ -64,3 +64,27 @@ class CartItemViewSet(ModelViewSet):
 class CustomerViewSet(ModelViewSet):
     queryset = models.Customer.objects.all()
     serializer_class = CustomerSerializer
+
+
+class OrderListApiView(generics.ListAPIView):
+    serializer_class = OrderSerializer
+
+    def get_serializer_context(self):
+        return {'user_id': self.request.user.pk}
+
+    # def get_serializer_class(self):
+    #     if self.request.method == 'POST':
+    #         return OrderCreateserializer
+
+    def get_queryset(self):
+        queryset = models.Order.objects.prefetch_related('items__product')
+
+        if self.request.user.is_staff:
+            return queryset
+        
+        return queryset.filter(customer__user_id=self.request.user.pk)
+    
+
+class OrderCreateApiView(generics.CreateAPIView):
+    queryset = models.Order.objects.all()
+    serializer_class = OrderCreateserializer
