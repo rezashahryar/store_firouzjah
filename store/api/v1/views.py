@@ -1,6 +1,7 @@
 from rest_framework import generics
 from rest_framework.viewsets import GenericViewSet, ModelViewSet
 from rest_framework import mixins
+from rest_framework.permissions import IsAuthenticated
 
 from django.db.models import Prefetch
 
@@ -88,3 +89,7 @@ class OrderListApiView(generics.ListAPIView):
 class OrderCreateApiView(generics.CreateAPIView):
     queryset = models.Order.objects.all()
     serializer_class = OrderCreateserializer
+    permission_classes = [IsAuthenticated]
+
+    def get_serializer_context(self):
+        return {'user_id': self.request.user.pk}

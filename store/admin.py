@@ -60,6 +60,16 @@ class ProvinceAdmin(admin.ModelAdmin):
     ...
 
 
+@admin.register(models.Customer)
+class CustomerAdmin(admin.ModelAdmin):
+    ...
+
+
+@admin.register(models.Order)
+class OrderAdmin(admin.ModelAdmin):
+    ...
+
+
 class CartItemInline(admin.TabularInline):
     model = models.CartItem
     fields = ['product', 'quantity']

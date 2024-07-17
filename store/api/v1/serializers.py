@@ -266,7 +266,7 @@ class OrderCreateserializer(serializers.Serializer):
             for item in cart_items:
                 order_item = models.OrderItem()
                 order_item.order = order
-                order_item.product = item.product_id
+                order_item.product = item.product
                 order_item.unit_price = item.product.price
                 order_item.quantity = item.quantity
 
