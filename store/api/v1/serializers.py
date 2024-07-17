@@ -34,24 +34,54 @@ class ProductPropertySerializer(serializers.ModelSerializer):
         fields = ['property', 'value']
 
 
-class ProductSerializer(serializers.ModelSerializer):
+class ColorSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = models.Color
+        fields = ['name', 'code_of_color']
+
+
+class StoreSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = models.Store
+        fields = ['name', 'code']
+
+
+class ProductImageSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = models.ProductImage
+        fields = ['image', 'is_cover']
+
+
+class BaseProductSerializer(serializers.ModelSerializer):
     category = serializers.StringRelatedField()
     sub_category = serializers.StringRelatedField()
+    store = StoreSerializer()
+    images = ProductImageSerializer(many=True)
+
+    class Meta:
+        model = models.BaseProduct
+        fields = [
+            'store', 'category', 'sub_category', 'title_farsi', 'title_english', 'description',
+            'slug', 'product_code', 'product_model', 'status_originaly',
+            'product_warranty', 'sending_method', 'images',
+        ]
+
+
+class ProductSerializer(serializers.ModelSerializer):
+    product = BaseProductSerializer()
+    size = serializers.StringRelatedField()
+    color = ColorSerializer()
 
     class Meta:
         model = models.Product
         fields = [
-            "title_farsi",
-            "title_english",
-            "category",
-            "sub_category",
-            "product_code",
-            # "inventory",
-            "product_model",
-            "status_originaly",
-            "product_warranty",
-            "sending_method",
-            "property"
+            'product', 'size', 'color', 'inventory', 'unit', 'price', 'price_after_discount',
+            'discount_percent', 'start_discount_datetime', 'end_discount_datetime',
+            'length_package', 'width_package', 'height_package', 'weight_package',
+            'shenase_kala', 'barcode',
         ]
 
     def to_representation(self, instance):
@@ -66,31 +96,11 @@ class HaghighyStoreSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.HaghighyStore
         fields = [
-            "name",
-            "mobile_number",
-            "phone_number",
-            "email",
-            "shomare_shaba",
-            "province",
-            "city",
-            "mantaghe",
-            "mahalle",
-            "address",
-            "post_code",
-            "parvane_kasb",
-            "tasvire_personely",
-            "kart_melli",
-            "shenasname",
-            "logo",
-            "roozname_rasmi_alamat",
-            "gharardad",
-            "code",
-            "full_name",
-            "birth_date",
-            "name_father",
-            "code_melli",
-            "shomare_shenasname",
-            "store_type",
+            "name", "mobile_number", "phone_number", "email", "shomare_shaba", "province",
+            "city", "mantaghe", "mahalle", "address", "post_code", "parvane_kasb",
+            "tasvire_personely", "kart_melli", "shenasname", "logo", "roozname_rasmi_alamat",
+            "gharardad", "code", "full_name", "birth_date",
+            "name_father", "code_melli", "shomare_shenasname", "store_type",
         ]
         read_only_fields = ["code"]
         # extra_kwargs = {
@@ -110,29 +120,10 @@ class HoghoughyStoreSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.HoghoughyStore
         fields = [
-            "name",
-            "mobile_number",
-            "phone_number",
-            "email",
-            "shomare_shaba",
-            "province",
-            "city",
-            "mantaghe",
-            "mahalle",
-            "address",
-            "post_code",
-            "parvane_kasb",
-            "tasvire_personely",
-            "kart_melli",
-            "shenasname",
-            "logo",
-            "roozname_rasmi_alamat",
-            "gharardad",
-            "code",
-            "ceo_name",
-            "company_name",
-            "date_of_registration",
-            "num_of_registration",
-            "economic_code",
+            "name", "mobile_number", "phone_number", "email", "shomare_shaba", "province",
+            "city", "mantaghe", "mahalle", "address", "post_code", "parvane_kasb",
+            "tasvire_personely", "kart_melli", "shenasname", "logo", "roozname_rasmi_alamat",
+            "gharardad", "code", "ceo_name", "company_name", "date_of_registration",
+            "num_of_registration", "economic_code",
         ]
         read_only_fields = ["code"]

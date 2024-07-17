@@ -9,10 +9,12 @@ from .serializers import ProductSerializer, HaghighyStoreSerializer, HoghoughySt
 
 
 class ProductListApiView(generics.ListAPIView):
-    queryset = models.Product.objects.select_related('category').select_related('sub_category').prefetch_related(Prefetch(
+    queryset = models.Product.objects.select_related('size').select_related('color') \
+    .select_related('product__store').select_related('product__category') \
+    .select_related('product__sub_category').prefetch_related(Prefetch(
         'property',
         queryset=models.SetProductProperty.objects.select_related('property')
-    )).all()
+    ))
     serializer_class = ProductSerializer
 
 
