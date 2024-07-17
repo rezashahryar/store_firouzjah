@@ -2,6 +2,7 @@ import requests
 import json
 import random
 
+from django.utils import timezone
 from rest_framework import serializers
 
 from core.models import OtpRequest
@@ -15,7 +16,7 @@ class RequestSendOtpSerializer(serializers.Serializer):
     def create(self, validated_data):
         req_otp = OtpRequest.objects.create(
             mobile=validated_data['mobile'],
-            code=self._random_code()
+            otp_code=self._random_code()
         )
         req_otp.save()
 
@@ -29,7 +30,7 @@ class RequestSendOtpSerializer(serializers.Serializer):
             "Password": "435046",
             "From": "10002147",
             "To": req_otp.mobile,
-            "Message": f"کد بازیابی شما : {req_otp.code}",
+            "Message": f"کد بازیابی شما : {req_otp.otp_code}",
         }
 
         res = requests.post(
@@ -54,9 +55,14 @@ class VerifyOtpSerializer(serializers.Serializer):
         try:
             otp_req = OtpRequest.objects.get(
                 id=attrs['id'],
-                code=attrs['otp_code']
+                otp_code=attrs['otp_code']
             )
+
+            if otp_req.valid_until < timezone.now():
+                raise serializers.ValidationError("this code expired")
         except OtpRequest.DoesNotExist:
             raise serializers.ValidationError("serializer error")
+        
+
             
         return super().validate(attrs)
