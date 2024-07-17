@@ -6,7 +6,7 @@ from django.db.models import Prefetch
 
 from store import models
 
-from .serializers import AddCartItemSerializer, CartItemSerializer, CartSerialzier, ChangeCartItemSerializer, ProductSerializer, HaghighyStoreSerializer, HoghoughyStoreSerializer
+from .serializers import AddCartItemSerializer, CartItemSerializer, CartSerialzier, ChangeCartItemSerializer, CustomerSerializer, ProductSerializer, HaghighyStoreSerializer, HoghoughyStoreSerializer
 
 # create your views here
 
@@ -59,3 +59,8 @@ class CartItemViewSet(ModelViewSet):
     def get_queryset(self):
         cart_pk = self.kwargs['cart_pk']
         return models.CartItem.objects.filter(cart_id=cart_pk).select_related('product__product')
+    
+
+class CustomerViewSet(ModelViewSet):
+    queryset = models.Customer.objects.all()
+    serializer_class = CustomerSerializer
