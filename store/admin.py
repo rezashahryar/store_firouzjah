@@ -60,6 +60,20 @@ class ProvinceAdmin(admin.ModelAdmin):
     ...
 
 
+class CartItemInline(admin.TabularInline):
+    model = models.CartItem
+    fields = ['product', 'quantity']
+    extra = 0
+    min_num = 1
+
+
+@admin.register(models.Cart)
+class CartAdmin(admin.ModelAdmin):
+    inlines = [
+        CartItemInline
+    ]
+
+
 @admin.register(models.City)
 class CityAdmin(admin.ModelAdmin):
     ...
