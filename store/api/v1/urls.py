@@ -9,12 +9,14 @@ from . import views
 router = DefaultRouter()
 router.register('carts', views.CartViewSet, basename='cart')
 router.register('customers', views.CustomerViewSet, basename='customer')
+router.register('categories', views.CategoryViewSet, basename='categories')
+router.register('products', views.ProductViewSet, basename='products')
 
 cart_items_router = routers.NestedDefaultRouter(router, 'carts', lookup='cart')
 cart_items_router.register('items', views.CartItemViewSet, basename='cart-items')
 
 urlpatterns = [
-    path('product/list/', views.ProductListApiView.as_view(), name='product_list'),
+    path('product/list/<int:pk>/', views.AllProductListApiView.as_view(), name='product_list'),
     path('store/create/', views.StoreCreateApiView.as_view(), name='store_create'),
     path('order/list/', views.OrderListApiView.as_view(), name='order'),
     path('order/create/', views.OrderCreateApiView.as_view(), name='order_create'),

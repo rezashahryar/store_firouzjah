@@ -63,24 +63,29 @@ class BaseProductSerializer(serializers.ModelSerializer):
     store = StoreSerializer()
     images = ProductImageSerializer(many=True)
 
+    status_originaly = serializers.CharField(source='get_status_originaly_display')
+    sending_method = serializers.CharField(source='get_sending_method_display')
+
     class Meta:
         model = models.BaseProduct
         fields = [
-            'store', 'category', 'sub_category', 'title_farsi', 'title_english', 'description',
-            'slug', 'product_code', 'product_model', 'status_originaly',
+            'id', 'store', 'category', 'sub_category', 'title_farsi', 'title_english', 'description',
+            'product_list_code', 'product_model', 'status_originaly',
             'product_warranty', 'sending_method', 'images',
         ]
 
 
-class ProductSerializer(serializers.ModelSerializer):
+class ProductDetailSerializer(serializers.ModelSerializer):
     product = BaseProductSerializer()
     size = serializers.StringRelatedField()
     color = ColorSerializer()
 
+    unit = serializers.CharField(source='get_unit_display')
+
     class Meta:
         model = models.Product
         fields = [
-            'product', 'size', 'color', 'inventory', 'unit', 'price', 'price_after_discount',
+            'id', 'product', 'size', 'color', 'inventory', 'unit', 'price', 'price_after_discount',
             'discount_percent', 'start_discount_datetime', 'end_discount_datetime',
             'length_package', 'width_package', 'height_package', 'weight_package',
             'shenase_kala', 'barcode',
@@ -91,6 +96,22 @@ class ProductSerializer(serializers.ModelSerializer):
         rep['property'] = ProductPropertySerializer(instance.property.all(), many=True).data
 
         return rep
+    
+
+class BaseProductListSerializer(serializers.ModelSerializer):
+    category = serializers.StringRelatedField()
+
+    class Meta:
+        model = models.BaseProduct
+        fields = ['category', 'title_farsi']
+    
+
+class ProductListSerializer(serializers.ModelSerializer):
+    product = BaseProductListSerializer()
+
+    class Meta:
+        model = models.Product
+        fields = ['product', 'slug', 'price', 'price_after_discount', 'start_discount_datetime', 'end_discount_datetime']
 
 
 class HaghighyStoreSerializer(serializers.ModelSerializer):
@@ -129,6 +150,47 @@ class HoghoughyStoreSerializer(serializers.ModelSerializer):
             "num_of_registration", "economic_code",
         ]
         read_only_fields = ["code"]
+
+
+class StoreDetailAllProductListSerializer(serializers.ModelSerializer):
+    province = serializers.StringRelatedField()
+
+    class Meta:
+        model = models.Store
+        fields = ['code', 'province']
+
+
+class ProductDetailAllProductListSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = models.BaseProduct
+        fields = ['title_farsi']
+
+
+class BaseProductAllProductListSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = models.BaseProduct
+        fields = ['title_farsi']
+
+
+class AllProductListSerializer(serializers.ModelSerializer):
+    store = StoreDetailAllProductListSerializer()
+    product = ProductDetailAllProductListSerializer()
+
+    class Meta:
+        model = models.ProductList
+        fields = ['store', 'product']
+
+    def to_representation(self, instance):
+        rep =  super().to_representation(instance)
+        base_product_obj = models.BaseProduct.objects.get(pk=self.context['base_product_id'])
+        new_rep = {
+            'base_product': BaseProductAllProductListSerializer(base_product_obj).data,
+            **rep
+        }
+
+        return new_rep
 
 
 class CartBaseProductserializer(serializers.ModelSerializer):
@@ -217,7 +279,7 @@ class OrderProductSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = models.Product
-        fields = ['id', 'product__title_farsi', 'price']
+        fields = ['id', 'product', 'price']
 
 
 class OrderItemSerializer(serializers.ModelSerializer):
@@ -277,3 +339,10 @@ class OrderCreateserializer(serializers.Serializer):
             models.Cart.objects.get(id=cart_id).delete()
 
             return order
+        
+
+class CategoryProductSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = models.CategoryProduct
+        fields = ['name', 'image', 'slug']

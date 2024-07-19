@@ -136,6 +136,7 @@ class CategoryProduct(models.Model):
     
 
 class SubCategoryProduct(models.Model):
+    category = models.ForeignKey(CategoryProduct, on_delete=models.CASCADE, related_name='sub_categories', null=True)
     name = models.CharField(max_length=255)
     slug = models.SlugField()
 
@@ -190,10 +191,8 @@ class BaseProduct(models.Model):
     title_english = models.CharField(max_length=255)
 
     description = models.TextField()
-
-    slug = models.SlugField()
     
-    product_code = models.CharField(max_length=4, default=random_code_product)
+    product_list_code = models.CharField(max_length=4, default=random_code_product, unique=True)
     product_model = models.CharField(max_length=255)
 
     status_originaly = models.CharField(max_length=10, choices=StatusOriginaly.choices)
@@ -209,12 +208,17 @@ class Product(models.Model):
 
     class ProductUnit(models.TextChoices):
         PAIR = "p", _("جفت")
+        NUM = "n", _("عددی")
 
     product = models.ForeignKey(BaseProduct, on_delete=models.CASCADE, related_name='products')
     size = models.ForeignKey(Size, on_delete=models.CASCADE, related_name='products')
     color = models.ForeignKey(Color, on_delete=models.CASCADE, related_name='products')
     inventory = models.PositiveIntegerField()
     unit = models.CharField(max_length=3, choices=ProductUnit.choices)
+
+    product_code = models.CharField(max_length=4, unique=True, default=random_code_product)
+
+    slug = models.SlugField()
 
     price = models.IntegerField()
     price_after_discount = models.IntegerField()
@@ -233,6 +237,11 @@ class Product(models.Model):
 
     def __str__(self):
         return self.product.title_farsi
+    
+
+class ProductList(models.Model):
+    store = models.ForeignKey(Store, on_delete=models.CASCADE, related_name='store_list')
+    product = models.ForeignKey(BaseProduct, on_delete=models.CASCADE, related_name='product_lists')
     
 
 class ProductImage(models.Model):

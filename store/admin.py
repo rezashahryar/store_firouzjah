@@ -37,7 +37,13 @@ class ProductTypeAdmin(admin.ModelAdmin):
 
 @admin.register(models.BaseProduct)
 class BaseProductAdmin(admin.ModelAdmin):
-    prepopulated_fields = {'slug': ('title_english', )}
+    # prepopulated_fields = {'slug': ('title_english', )}
+    ...
+
+
+@admin.register(models.ProductList)
+class ProductListAdmin(admin.ModelAdmin):
+    ...
 
 
 @admin.register(models.Size)

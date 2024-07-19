@@ -2,24 +2,60 @@ from rest_framework import generics
 from rest_framework.viewsets import GenericViewSet, ModelViewSet
 from rest_framework import mixins
 from rest_framework.permissions import IsAuthenticated
-
 from django.db.models import Prefetch
+from django_filters.rest_framework import DjangoFilterBackend
+from django.shortcuts import get_object_or_404
 
 from store import models
 
-from .serializers import AddCartItemSerializer, CartItemSerializer, CartSerialzier, ChangeCartItemSerializer, CustomerSerializer, OrderCreateserializer, OrderSerializer, ProductSerializer, HaghighyStoreSerializer, HoghoughyStoreSerializer
+from .serializers import (
+    AddCartItemSerializer, AllProductListSerializer, CartItemSerializer, CartSerialzier, CategoryProductSerializer, ChangeCartItemSerializer,
+    CustomerSerializer, OrderCreateserializer, OrderSerializer, ProductDetailSerializer, 
+    HaghighyStoreSerializer, HoghoughyStoreSerializer, ProductListSerializer
+)
+from .filters import ProductFilter
 
 # create your views here
 
 
-class ProductListApiView(generics.ListAPIView):
+class AllProductListApiView(generics.ListAPIView):
+    serializer_class = AllProductListSerializer
+    
+    def get_queryset(self):
+        pk = self.kwargs['pk']
+        base_product_obj = get_object_or_404(models.BaseProduct, pk=pk)
+
+        return models.ProductList.objects.filter(product__title_farsi__icontains=base_product_obj.title_farsi)
+    
+    def get_serializer_context(self):
+        return {'base_product_id': self.kwargs['pk']}
+
+
+class CategoryViewSet(ModelViewSet):
+    queryset = models.CategoryProduct.objects.all()
+    serializer_class = CategoryProductSerializer
+    lookup_field = 'slug'
+
+
+class ProductViewSet(mixins.RetrieveModelMixin,
+                    mixins.ListModelMixin,
+                    GenericViewSet):
     queryset = models.Product.objects.select_related('size').select_related('color') \
     .select_related('product__store').select_related('product__category') \
     .select_related('product__sub_category').prefetch_related(Prefetch(
         'property',
         queryset=models.SetProductProperty.objects.select_related('property')
     ))
-    serializer_class = ProductSerializer
+    filter_backends = [DjangoFilterBackend]
+    # filterset_fields = ['product__sending_method', 'price', 'product__title_english']
+    filterset_class = ProductFilter
+    lookup_field = 'slug'
+    
+    def get_serializer_class(self):
+        if self.action == 'list':
+            return ProductListSerializer
+        elif self.action == 'retrieve':
+            return ProductDetailSerializer
 
 
 class StoreCreateApiView(generics.CreateAPIView):
