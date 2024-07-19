@@ -241,7 +241,7 @@ class Product(models.Model):
 
 class ProductList(models.Model):
     store = models.ForeignKey(Store, on_delete=models.CASCADE, related_name='store_list')
-    product = models.ForeignKey(BaseProduct, on_delete=models.CASCADE, related_name='product_lists')
+    product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name='product_lists')
     
 
 class ProductImage(models.Model):

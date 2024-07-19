@@ -161,36 +161,54 @@ class StoreDetailAllProductListSerializer(serializers.ModelSerializer):
 
 
 class ProductDetailAllProductListSerializer(serializers.ModelSerializer):
+    title_farsi = serializers.CharField(source='product.title_farsi')
 
     class Meta:
-        model = models.BaseProduct
-        fields = ['title_farsi']
+        model = models.Product
+        fields = ['title_farsi', 'price', 'price_after_discount', 'discount_percent']
 
 
 class BaseProductAllProductListSerializer(serializers.ModelSerializer):
+    seller_count = serializers.SerializerMethodField()
+    cheapest_price = serializers.SerializerMethodField()
+    most_expensive_price = serializers.SerializerMethodField()
 
     class Meta:
         model = models.BaseProduct
-        fields = ['title_farsi']
+        fields = ['title_farsi', 'title_english', 'seller_count', 'cheapest_price', 'most_expensive_price']
+
+    def get_seller_count(self, base_product):
+        obj = models.BaseProduct.objects.get(pk=self.context['base_product_id'])
+        return models.Store.objects.all().filter(products__category=obj.category, products__sub_category=obj.sub_category).count()
+    
+    def get_cheapest_price(self, base_product):
+        obj = models.BaseProduct.objects.get(pk=self.context['base_product_id'])
+        queryset = models.Product.objects.filter(product__category=obj.category, product__sub_category=obj.sub_category).order_by('price')
+
+
+        if queryset:
+            return queryset[0].price
+        return None
+    
+    def get_most_expensive_price(self, base_product):
+        obj = models.BaseProduct.objects.get(pk=self.context['base_product_id'])
+        queryset = models.Product.objects.filter(product__category=obj.category, product__sub_category=obj.sub_category).order_by('-price')
+
+        if queryset:
+            return queryset[0].price
+        # elif obj is not None:
+        #     return models.Product.objects.get(product__title_farsi__icontains=obj.title_farsi).price
+        return None
 
 
 class AllProductListSerializer(serializers.ModelSerializer):
     store = StoreDetailAllProductListSerializer()
     product = ProductDetailAllProductListSerializer()
 
+
     class Meta:
         model = models.ProductList
         fields = ['store', 'product']
-
-    def to_representation(self, instance):
-        rep =  super().to_representation(instance)
-        base_product_obj = models.BaseProduct.objects.get(pk=self.context['base_product_id'])
-        new_rep = {
-            'base_product': BaseProductAllProductListSerializer(base_product_obj).data,
-            **rep
-        }
-
-        return new_rep
 
 
 class CartBaseProductserializer(serializers.ModelSerializer):

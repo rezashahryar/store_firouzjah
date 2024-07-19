@@ -2,6 +2,7 @@ from rest_framework import generics
 from rest_framework.viewsets import GenericViewSet, ModelViewSet
 from rest_framework import mixins
 from rest_framework.permissions import IsAuthenticated
+from rest_framework.response import Response
 from django.db.models import Prefetch
 from django_filters.rest_framework import DjangoFilterBackend
 from django.shortcuts import get_object_or_404
@@ -9,7 +10,8 @@ from django.shortcuts import get_object_or_404
 from store import models
 
 from .serializers import (
-    AddCartItemSerializer, AllProductListSerializer, CartItemSerializer, CartSerialzier, CategoryProductSerializer, ChangeCartItemSerializer,
+    AddCartItemSerializer, AllProductListSerializer, BaseProductAllProductListSerializer, 
+    CartItemSerializer, CartSerialzier, CategoryProductSerializer, ChangeCartItemSerializer,
     CustomerSerializer, OrderCreateserializer, OrderSerializer, ProductDetailSerializer, 
     HaghighyStoreSerializer, HoghoughyStoreSerializer, ProductListSerializer
 )
@@ -20,12 +22,32 @@ from .filters import ProductFilter
 
 class AllProductListApiView(generics.ListAPIView):
     serializer_class = AllProductListSerializer
+
+    def list(self, request, *args, **kwargs):
+        queryset = self.filter_queryset(self.get_queryset())
+
+        page = self.paginate_queryset(queryset)
+        if page is not None:
+            serializer = self.get_serializer(page, many=True)
+            return self.get_paginated_response(serializer.data)
+
+        serializer = self.get_serializer(queryset, many=True)
+        pk=self.kwargs['pk']
+
+        query = models.BaseProduct.objects.get(pk=pk)
+
+        return Response({
+            'base_product': BaseProductAllProductListSerializer(query, context={'base_product_id': pk}).data,
+            # "seller_count": models.Store.objects.filter(products=query),
+            'products': serializer.data
+        })
     
     def get_queryset(self):
         pk = self.kwargs['pk']
         base_product_obj = get_object_or_404(models.BaseProduct, pk=pk)
+        queryset = models.ProductList.objects.filter(product__product__category=base_product_obj.category, product__product__sub_category=base_product_obj.sub_category)
 
-        return models.ProductList.objects.filter(product__title_farsi__icontains=base_product_obj.title_farsi)
+        return queryset
     
     def get_serializer_context(self):
         return {'base_product_id': self.kwargs['pk']}
