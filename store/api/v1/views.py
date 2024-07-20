@@ -12,12 +12,19 @@ from store import models
 from .serializers import (
     AddCartItemSerializer, AllProductListSerializer, BaseProductAllProductListSerializer, 
     CartItemSerializer, CartSerialzier, CategoryProductSerializer, ChangeCartItemSerializer,
-    CustomerSerializer, OrderCreateserializer, OrderSerializer, ProductDetailSerializer, 
+    CustomerSerializer, OrderCreateserializer, OrderSerializer, ProductCommentSerializer, ProductDetailSerializer, 
     HaghighyStoreSerializer, HoghoughyStoreSerializer, ProductListSerializer
 )
 from .filters import ProductFilter
 
 # create your views here
+
+
+class ProductCommentViewSet(mixins.CreateModelMixin,
+                            mixins.ListModelMixin,
+                            GenericViewSet):
+    queryset = models.ProductComment.objects.all()
+    serializer_class = ProductCommentSerializer
 
 
 class AllProductListApiView(generics.ListAPIView):

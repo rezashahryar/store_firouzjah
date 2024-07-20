@@ -309,3 +309,14 @@ class OrderItem(models.Model):
 
     class Meta:
         unique_together = [['order', 'product']]
+
+
+class ProductComment(models.Model):
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='comments')
+    product = models.ForeignKey(BaseProduct, on_delete=models.CASCADE, related_name='comments')
+    text = models.TextField()
+
+    datetime_created = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return str(self.user)

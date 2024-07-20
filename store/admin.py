@@ -5,6 +5,11 @@ from store import models
 # Register your models here.
 
 
+@admin.register(models.ProductComment)
+class CommentProduct(admin.ModelAdmin):
+    ...
+
+
 @admin.register(models.Store)
 class StoreAdmin(admin.ModelAdmin):
     ...

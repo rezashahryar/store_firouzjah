@@ -2,6 +2,7 @@ from rest_framework import serializers
 
 from django.db import transaction
 
+from core.models import User
 from store import models
 
 # create your serializers here
@@ -57,6 +58,35 @@ class ProductImageSerializer(serializers.ModelSerializer):
         fields = ['image', 'is_cover']
 
 
+
+class ProductCommentUserSerializer(serializers.ModelSerializer):
+    user_info = serializers.SerializerMethodField()
+
+    class Meta:
+        model = User
+        fields = ['user_info']
+
+    def get_user_info(self, product_comment_user):
+        return str(product_comment_user.mobile)
+        
+
+
+class ProductCommentSerializer(serializers.ModelSerializer):
+    product = serializers.StringRelatedField()
+
+    class Meta:
+        model = models.ProductComment
+        fields = ['id', 'user', 'product', 'text', 'datetime_created']
+
+    def to_representation(self, instance):
+        print('+=' * 40)
+        print(instance)
+        rep = super().to_representation(instance)
+        rep['user'] = ProductCommentUserSerializer(instance.user).data
+
+        return rep
+
+
 class BaseProductSerializer(serializers.ModelSerializer):
     category = serializers.StringRelatedField()
     sub_category = serializers.StringRelatedField()
@@ -66,12 +96,14 @@ class BaseProductSerializer(serializers.ModelSerializer):
     status_originaly = serializers.CharField(source='get_status_originaly_display')
     sending_method = serializers.CharField(source='get_sending_method_display')
 
+    comments = ProductCommentSerializer(many=True)
+
     class Meta:
         model = models.BaseProduct
         fields = [
             'id', 'store', 'category', 'sub_category', 'title_farsi', 'title_english', 'description',
             'product_list_code', 'product_model', 'status_originaly',
-            'product_warranty', 'sending_method', 'images',
+            'product_warranty', 'sending_method', 'images', 'comments'
         ]
 
 
