@@ -58,7 +58,6 @@ class ProductImageSerializer(serializers.ModelSerializer):
         fields = ['image', 'is_cover']
 
 
-
 class ProductCommentUserSerializer(serializers.ModelSerializer):
     user_info = serializers.SerializerMethodField()
 
@@ -70,7 +69,6 @@ class ProductCommentUserSerializer(serializers.ModelSerializer):
         return str(product_comment_user.mobile)
         
 
-
 class ProductCommentSerializer(serializers.ModelSerializer):
     product = serializers.StringRelatedField()
 
@@ -79,8 +77,6 @@ class ProductCommentSerializer(serializers.ModelSerializer):
         fields = ['id', 'user', 'product', 'text', 'datetime_created']
 
     def to_representation(self, instance):
-        print('+=' * 40)
-        print(instance)
         rep = super().to_representation(instance)
         rep['user'] = ProductCommentUserSerializer(instance.user).data
 
@@ -102,13 +98,13 @@ class BaseProductSerializer(serializers.ModelSerializer):
         model = models.BaseProduct
         fields = [
             'id', 'store', 'category', 'sub_category', 'title_farsi', 'title_english', 'description',
-            'product_list_code', 'product_model', 'status_originaly',
+            'product_model', 'status_originaly',
             'product_warranty', 'sending_method', 'images', 'comments'
         ]
 
 
 class ProductDetailSerializer(serializers.ModelSerializer):
-    product = BaseProductSerializer()
+    base_product = BaseProductSerializer()
     size = serializers.StringRelatedField()
     color = ColorSerializer()
 
@@ -117,7 +113,7 @@ class ProductDetailSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.Product
         fields = [
-            'id', 'product', 'size', 'color', 'inventory', 'unit', 'price', 'price_after_discount',
+            'id', 'base_product', 'size', 'color', 'inventory', 'unit', 'price', 'price_after_discount',
             'discount_percent', 'start_discount_datetime', 'end_discount_datetime',
             'length_package', 'width_package', 'height_package', 'weight_package',
             'shenase_kala', 'barcode',
@@ -132,18 +128,19 @@ class ProductDetailSerializer(serializers.ModelSerializer):
 
 class BaseProductListSerializer(serializers.ModelSerializer):
     category = serializers.StringRelatedField()
+    sub_category = serializers.StringRelatedField()
 
     class Meta:
         model = models.BaseProduct
-        fields = ['category', 'title_farsi']
+        fields = ['category', 'sub_category', 'title_farsi']
     
 
 class ProductListSerializer(serializers.ModelSerializer):
-    product = BaseProductListSerializer()
+    base_product = BaseProductListSerializer()
 
     class Meta:
         model = models.Product
-        fields = ['product', 'slug', 'price', 'price_after_discount', 'start_discount_datetime', 'end_discount_datetime']
+        fields = ['base_product', 'slug', 'price', 'price_after_discount', 'start_discount_datetime', 'end_discount_datetime']
 
 
 class HaghighyStoreSerializer(serializers.ModelSerializer):
@@ -193,7 +190,7 @@ class StoreDetailAllProductListSerializer(serializers.ModelSerializer):
 
 
 class ProductDetailAllProductListSerializer(serializers.ModelSerializer):
-    title_farsi = serializers.CharField(source='product.title_farsi')
+    title_farsi = serializers.CharField(source='base_product.title_farsi')
 
     class Meta:
         model = models.Product
@@ -215,8 +212,7 @@ class BaseProductAllProductListSerializer(serializers.ModelSerializer):
     
     def get_cheapest_price(self, base_product):
         obj = models.BaseProduct.objects.get(pk=self.context['base_product_id'])
-        queryset = models.Product.objects.filter(product__category=obj.category, product__sub_category=obj.sub_category).order_by('price')
-
+        queryset = models.Product.objects.filter(base_product__category=obj.category, base_product__sub_category=obj.sub_category).order_by('price')
 
         if queryset:
             return queryset[0].price
@@ -224,7 +220,7 @@ class BaseProductAllProductListSerializer(serializers.ModelSerializer):
     
     def get_most_expensive_price(self, base_product):
         obj = models.BaseProduct.objects.get(pk=self.context['base_product_id'])
-        queryset = models.Product.objects.filter(product__category=obj.category, product__sub_category=obj.sub_category).order_by('-price')
+        queryset = models.Product.objects.filter(base_product__category=obj.category, base_product__sub_category=obj.sub_category).order_by('-price')
 
         if queryset:
             return queryset[0].price

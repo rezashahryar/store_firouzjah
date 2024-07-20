@@ -8,6 +8,6 @@ class ProductFilter(django_filters.FilterSet):
         model = Product
         fields = {
             'slug': ['icontains'],
-            'product__title_farsi': ['icontains']
+            'base_product__title_farsi': ['icontains']
         }
         

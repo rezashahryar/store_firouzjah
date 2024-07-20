@@ -182,23 +182,31 @@ class BaseProduct(models.Model):
         BAARBARY = "bar", _("باربری")
         PEYK_MOTOR = "peyk", _("پیک موتوری")
 
+    class ProductStatus(models.TextChoices):
+        CONFIRM = 'c', _('تایید شده')
+        WAITING = 'w', _('در انتظار تایید')
+        NOT_CONFIRM = 'n', _('تایید نشده')
+
     store = models.ForeignKey(Store, on_delete=models.CASCADE, related_name='products')
 
     category = models.ForeignKey(CategoryProduct, on_delete=models.CASCADE, related_name='products')
     sub_category = models.ForeignKey(SubCategoryProduct, on_delete=models.CASCADE, related_name='products')
 
+    product_type = models.ForeignKey(ProductType, on_delete=models.SET_NULL, related_name='products', null=True)
+
     title_farsi = models.CharField(max_length=255)
     title_english = models.CharField(max_length=255)
 
     description = models.TextField()
-    
-    product_list_code = models.CharField(max_length=4, default=random_code_product, unique=True)
+
     product_model = models.CharField(max_length=255)
 
     status_originaly = models.CharField(max_length=10, choices=StatusOriginaly.choices)
     product_warranty = models.BooleanField()
 
     sending_method = models.CharField(max_length=4, choices=SendingMethod.choices)
+
+    product_status = models.CharField(max_length=1, choices=ProductStatus.choices, default=ProductStatus.WAITING)
 
     def __str__(self):
         return self.title_farsi
@@ -210,7 +218,7 @@ class Product(models.Model):
         PAIR = "p", _("جفت")
         NUM = "n", _("عددی")
 
-    product = models.ForeignKey(BaseProduct, on_delete=models.CASCADE, related_name='products')
+    base_product = models.ForeignKey(BaseProduct, on_delete=models.CASCADE, related_name='products')
     size = models.ForeignKey(Size, on_delete=models.CASCADE, related_name='products')
     color = models.ForeignKey(Color, on_delete=models.CASCADE, related_name='products')
     inventory = models.PositiveIntegerField()

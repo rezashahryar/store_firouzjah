@@ -52,7 +52,7 @@ class AllProductListApiView(generics.ListAPIView):
     def get_queryset(self):
         pk = self.kwargs['pk']
         base_product_obj = get_object_or_404(models.BaseProduct, pk=pk)
-        queryset = models.ProductList.objects.filter(product__product__category=base_product_obj.category, product__product__sub_category=base_product_obj.sub_category)
+        queryset = models.ProductList.objects.filter(product__base_product__category=base_product_obj.category, product__base_product__sub_category=base_product_obj.sub_category)
 
         return queryset
     
@@ -70,8 +70,8 @@ class ProductViewSet(mixins.RetrieveModelMixin,
                     mixins.ListModelMixin,
                     GenericViewSet):
     queryset = models.Product.objects.select_related('size').select_related('color') \
-    .select_related('product__store').select_related('product__category') \
-    .select_related('product__sub_category').prefetch_related(Prefetch(
+    .select_related('base_product__store').select_related('base_product__category') \
+    .select_related('base_product__sub_category').prefetch_related(Prefetch(
         'property',
         queryset=models.SetProductProperty.objects.select_related('property')
     ))
