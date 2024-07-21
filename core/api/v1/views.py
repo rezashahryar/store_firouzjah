@@ -42,6 +42,7 @@ class CheckOtp(generics.GenericAPIView):
             user = User.objects.create(mobile=serializer.validated_data.get('mobile'))
             user.save()
             user.username = f'user_{user.pk}'
+            # user.user_permissions.add('web_mail')
             user.save()
 
             try:

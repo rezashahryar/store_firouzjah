@@ -280,11 +280,11 @@ class CartProductSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = models.Product
-        fields = ['product', 'price']
+        fields = ['base_product', 'price']
 
     def to_representation(self, instance):
         rep = super().to_representation(instance)
-        rep['product'] = CartBaseProductserializer(instance.product).data
+        rep['product'] = CartBaseProductserializer(instance.base_product).data
 
         return rep
 
@@ -325,7 +325,7 @@ class OrderProductSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = models.Product
-        fields = ['id', 'product', 'price']
+        fields = ['id', 'base_product', 'price']
 
 
 class OrderItemSerializer(serializers.ModelSerializer):
