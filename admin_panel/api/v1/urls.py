@@ -14,4 +14,3 @@ urlpatterns = [
     path('list/staff/permissions/', views.StaffListPermissionApiView.as_view()),
     path('', include(router.urls)),
 ]
-

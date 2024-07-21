@@ -281,7 +281,10 @@ class Customer(models.Model):
     last_name = models.CharField(max_length=255)
 
     def __str__(self):
-        return f'{self.first_name} {self.last_name}'
+        if self.first_name and self.last_name:
+            return f'{self.first_name} {self.last_name}'
+        else:
+            return str(self.user)
     
 
 class UnpaidOrderManager(models.Manager):
