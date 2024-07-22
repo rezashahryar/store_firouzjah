@@ -4,6 +4,7 @@ import random
 
 from django.utils import timezone
 from rest_framework import serializers
+from django.conf import settings
 
 from core.models import OtpRequest
 
@@ -26,9 +27,9 @@ class RequestSendOtpSerializer(serializers.Serializer):
         }
 
         data = {
-            "UserName": "09123344307",
-            "Password": "435046",
-            "From": "10002147",
+            "UserName": settings.WEB_SERVICE_OTP_USERNAME,
+            "Password": settings.WEB_SERVICE_OTP_PASSWORD,
+            "From": settings.SEND_OTP_CODE_FROM,
             "To": req_otp.mobile,
             "Message": f"کد بازیابی شما : {req_otp.otp_code}",
         }

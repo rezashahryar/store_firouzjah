@@ -156,3 +156,7 @@ REST_FRAMEWORK = {
         'rest_framework.authentication.TokenAuthentication',
     ]
 }
+
+SEND_OTP_CODE_FROM = config('SEND_OTP_CODE_FROM')
+WEB_SERVICE_OTP_PASSWORD = config('WEB_SERVICE_OTP_PASSWORD')
+WEB_SERVICE_OTP_USERNAME = config('WEB_SERVICE_OTP_USERNAME')
