@@ -13,12 +13,17 @@ from .serializers import (
     AddCartItemSerializer, AllProductListSerializer, BaseProductAllProductListSerializer, 
     CartItemSerializer, CartSerialzier, CategoryProductSerializer, ChangeCartItemSerializer,
     CustomerSerializer, DateOrderSerializer, OrderCreateserializer, OrderSerializer, ProductCommentSerializer, ProductDetailSerializer, 
-    HaghighyStoreSerializer, HoghoughyStoreSerializer, ProductListSerializer
+    HaghighyStoreSerializer, HoghoughyStoreSerializer, ProductListSerializer, RequestPhotografySerializer
 )
 from .filters import ProductFilter
 from .permissions import ProductCommetPermission
 
 # create your views here
+
+class RequestPhotografyviewSet(ModelViewSet):
+    queryset = models.RequestPhotografy.objects.all()
+    serializer_class = RequestPhotografySerializer
+
 
 class DateOrderViewSet(ModelViewSet):
     queryset = models.DateOrder.objects.all()

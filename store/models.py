@@ -361,4 +361,16 @@ class ProductComment(models.Model):
         return str(self.user)
     
 
-    
+class RequestPhotografy(models.Model):
+    full_name = models.CharField(max_length=255)
+    mobile = models.CharField(max_length=11)
+
+    province = models.ForeignKey(Province, on_delete=models.CASCADE, related_name='request_photografy')
+    city = models.ForeignKey(City, on_delete=models.CASCADE, related_name='request_photografy')
+    mantaghe = models.ForeignKey(Mantaghe, on_delete=models.CASCADE, related_name='request_photografy')
+    mahalle = models.CharField(max_length=255)
+
+    address = models.TextField()
+    store_name = models.CharField(max_length=255)
+
+    request_text = models.TextField()

@@ -452,3 +452,10 @@ class DateOrderSerializer(serializers.ModelSerializer):
         rep['time'] = TimeOrderSerializer(instance.time, many=True).data
 
         return rep
+    
+
+class RequestPhotografySerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = models.RequestPhotografy
+        fields = ['full_name', 'mobile', 'province', 'city', 'mantaghe', 'mahalle', 'address', 'store_name', 'request_text']

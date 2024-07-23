@@ -86,6 +86,11 @@ class DateOrderAdmin(admin.ModelAdmin):
     ...
 
 
+@admin.register(models.RequestPhotografy)
+class RequestPhotografyAdmin(admin.ModelAdmin):
+    ...
+
+
 @admin.register(models.Order)
 class OrderAdmin(admin.ModelAdmin):
     ...
