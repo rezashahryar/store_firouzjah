@@ -277,15 +277,40 @@ class CartItem(models.Model):
 
 class Customer(models.Model):
     user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='customers')
-    first_name = models.CharField(max_length=255)
-    last_name = models.CharField(max_length=255)
+    receiver_full_name = models.CharField(max_length=255)
+    recevier_mobile = models.CharField(max_length=11)
+    province = models.ForeignKey(Province, on_delete=models.CASCADE, related_name='customers')
+    city = models.ForeignKey(City, on_delete=models.CASCADE, related_name='customers')
+    mantaghe = models.ForeignKey(Mantaghe, on_delete=models.CASCADE, related_name='customers')
+    mahalle = models.CharField(max_length=11)
+    pelak = models.CharField(max_length=11)
+    vahed = models.CharField(max_length=3)
+    code_posti = models.CharField(max_length=12)
+    refferer_code = models.CharField(max_length=255)
+
 
     def __str__(self):
-        if self.first_name and self.last_name:
+        if self.receiver_full_name:
             return f'{self.first_name} {self.last_name}'
         else:
             return str(self.user)
-    
+        
+
+class TimeOrder(models.Model):
+    time_from = models.TimeField()
+    time_until = models.TimeField()
+
+    def __str__(self):
+        return str(f'{self.time_from} {self.time_until}')
+
+
+class DateOrder(models.Model):
+    date = models.DateField() 
+    time = models.ManyToManyField(TimeOrder, related_name='dates')
+
+    def __str__(self):
+        return str(f'{self.date}: ')
+
 
 class UnpaidOrderManager(models.Manager):
     def get_queryset(self):
@@ -305,6 +330,9 @@ class Order(models.Model):
     customer = models.ForeignKey(Customer, on_delete=models.CASCADE, related_name='orders')
     datetime_created = models.DateTimeField(auto_now_add=True)
     status = models.CharField(max_length=1, choices=ORDER_STATUS, default=ORDER_STATUS_UNPAID)
+
+    date_order = models.ForeignKey(DateOrder, on_delete=models.CASCADE, related_name='orders')
+    time_order = models.ForeignKey(TimeOrder, on_delete=models.CASCADE, related_name='orders')
 
     # unpaid_orders = UnpaidOrderManager()
 
@@ -331,3 +359,6 @@ class ProductComment(models.Model):
 
     def __str__(self):
         return str(self.user)
+    
+
+    

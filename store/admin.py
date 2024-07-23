@@ -76,6 +76,16 @@ class CustomerAdmin(admin.ModelAdmin):
     ...
 
 
+@admin.register(models.TimeOrder)
+class TimeOrderAdmin(admin.ModelAdmin):
+    ...
+
+
+@admin.register(models.DateOrder)
+class DateOrderAdmin(admin.ModelAdmin):
+    ...
+
+
 @admin.register(models.Order)
 class OrderAdmin(admin.ModelAdmin):
     ...

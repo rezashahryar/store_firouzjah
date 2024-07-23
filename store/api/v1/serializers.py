@@ -333,6 +333,7 @@ class CartSerialzier(serializers.ModelSerializer):
         return x
     
     def get_amount_payable(self, cart):
+        result = None
         for item in cart.items.all():
             if item.product.discount_percent:
                 result = self.get_total_price(cart) - sum(item.quantity * item.product.price_after_discount for item in cart.items.all())
@@ -345,7 +346,7 @@ class CustomerSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = models.Customer
-        fields = ['first_name', 'last_name', 'user']
+        fields = ['receiver_full_name', 'recevier_mobile', 'user']
 
 
 class OrderProductSerializer(serializers.ModelSerializer):
@@ -373,6 +374,8 @@ class OrderSerializer(serializers.ModelSerializer):
 
 class OrderCreateserializer(serializers.Serializer):
     cart_id = serializers.UUIDField()
+    date_id = serializers.CharField()
+    time_id = serializers.CharField()
 
     def validate_cart_id(self, cart_id):
         if not models.Cart.objects.filter(id=cart_id).exists():
@@ -388,10 +391,20 @@ class OrderCreateserializer(serializers.Serializer):
             cart_id = self.validated_data['cart_id']
             user_id = self.context['user_id']
 
+            date_id = self.validated_data['date_id']
+            time_id = self.validated_data['time_id']
+
+            date_obj = models.DateOrder.objects.get(pk=date_id)
+            time_obj = models.TimeOrder.objects.get(pk=time_id)
+
             customer = models.Customer.objects.get(user_id=user_id)
 
             order = models.Order()
             order.customer = customer
+            order.date_order = date_obj
+            order.time_order = time_obj
+            date_obj.time.remove(time_obj)
+            date_obj.save()
             order.save()
 
             cart_items = models.CartItem.objects.select_related('product').filter(cart_id=cart_id)
@@ -419,3 +432,23 @@ class CategoryProductSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.CategoryProduct
         fields = ['name', 'image', 'slug']
+
+
+class TimeOrderSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = models.TimeOrder
+        fields = ['id', 'time_from', 'time_until']
+
+
+class DateOrderSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = models.DateOrder
+        fields = ['id', 'date']
+
+    def to_representation(self, instance):
+        rep = super().to_representation(instance)
+        rep['time'] = TimeOrderSerializer(instance.time, many=True).data
+
+        return rep
