@@ -84,7 +84,7 @@ class OrderAdmin(admin.ModelAdmin):
 class CartItemInline(admin.TabularInline):
     model = models.CartItem
     fields = ['product', 'quantity']
-    extra = 0
+    extra = 1
     min_num = 1
 
 

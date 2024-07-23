@@ -66,21 +66,33 @@ class ProductCommentUserSerializer(serializers.ModelSerializer):
         fields = ['user_info']
 
     def get_user_info(self, product_comment_user):
-        return str(product_comment_user.mobile)
+        if product_comment_user.mobile:
+            return str(product_comment_user.mobile)
+        else:
+            return str(product_comment_user.username)
         
 
 class ProductCommentSerializer(serializers.ModelSerializer):
-    product = serializers.StringRelatedField()
 
     class Meta:
         model = models.ProductComment
-        fields = ['id', 'user', 'product', 'text', 'datetime_created']
+        fields = ['id', 'text', 'datetime_created']
 
     def to_representation(self, instance):
         rep = super().to_representation(instance)
         rep['user'] = ProductCommentUserSerializer(instance.user).data
 
         return rep
+    
+    def create(self, validated_data):
+        product_slug = self.context['product_slug']
+        base_product = models.Product.objects.get(slug=product_slug)
+
+        return models.ProductComment.objects.create(
+            product_id=base_product.pk,
+            user=self.context['user'],
+            **validated_data
+        )
 
 
 class BaseProductSerializer(serializers.ModelSerializer):
@@ -137,10 +149,11 @@ class BaseProductListSerializer(serializers.ModelSerializer):
 
 class ProductListSerializer(serializers.ModelSerializer):
     base_product = BaseProductListSerializer()
+    unit = serializers.CharField(source='get_unit_display')
 
     class Meta:
         model = models.Product
-        fields = ['base_product', 'slug', 'price', 'price_after_discount', 'start_discount_datetime', 'end_discount_datetime']
+        fields = ['base_product', 'slug', 'price', 'price_after_discount', 'start_discount_datetime', 'end_discount_datetime', 'unit']
 
 
 class HaghighyStoreSerializer(serializers.ModelSerializer):
@@ -280,11 +293,11 @@ class CartProductSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = models.Product
-        fields = ['base_product', 'price']
+        fields = ['slug', 'price', 'price_after_discount']
 
     def to_representation(self, instance):
         rep = super().to_representation(instance)
-        rep['product'] = CartBaseProductserializer(instance.base_product).data
+        rep['base_product'] = CartBaseProductserializer(instance.base_product).data
 
         return rep
 
@@ -304,14 +317,28 @@ class CartItemSerializer(serializers.ModelSerializer):
 class CartSerialzier(serializers.ModelSerializer):
     items = CartItemSerializer(many=True, read_only=True)
     total_price = serializers.SerializerMethodField()
+    total_discount_price = serializers.SerializerMethodField()
+    amount_payable = serializers.SerializerMethodField()
 
     class Meta:
         model = models.Cart
-        fields = ['id', 'items', 'total_price']
+        fields = ['id', 'items', 'total_price', 'total_discount_price', 'amount_payable']
         read_only_fields = ['id']
 
     def get_total_price(self, cart):
         return sum(item.quantity * item.product.price for item in cart.items.all())
+    
+    def get_total_discount_price(self, cart):
+        x = sum(item.product.price_after_discount for item in cart.items.all())
+        return x
+    
+    def get_amount_payable(self, cart):
+        for item in cart.items.all():
+            if item.product.discount_percent:
+                result = self.get_total_price(cart) - sum(item.quantity * item.product.price_after_discount for item in cart.items.all())
+                return result
+            result = self.get_total_price(cart) - sum(item.quantity * item.product.price for item in cart.items.all())
+        return result
     
 
 class CustomerSerializer(serializers.ModelSerializer):

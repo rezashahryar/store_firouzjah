@@ -16,6 +16,7 @@ from .serializers import (
     HaghighyStoreSerializer, HoghoughyStoreSerializer, ProductListSerializer
 )
 from .filters import ProductFilter
+from .permissions import ProductCommetPermission
 
 # create your views here
 
@@ -25,6 +26,19 @@ class ProductCommentViewSet(mixins.CreateModelMixin,
                             GenericViewSet):
     queryset = models.ProductComment.objects.all()
     serializer_class = ProductCommentSerializer
+    permission_classes = [ProductCommetPermission]
+
+    def get_queryset(self):
+        product_slug = self.kwargs['product_slug']
+        base_product = models.Product.objects.get(slug=product_slug)
+
+        return models.ProductComment.objects.filter(product_id=base_product.pk)
+    
+    def get_serializer_context(self):
+        return {
+            'product_slug': self.kwargs['product_slug'],
+            'user': self.request.user 
+        }
 
 
 class AllProductListApiView(generics.ListAPIView):
@@ -85,6 +99,7 @@ class ProductViewSet(mixins.RetrieveModelMixin,
             return ProductListSerializer
         elif self.action == 'retrieve':
             return ProductDetailSerializer
+        return ProductDetailSerializer
 
 
 class StoreCreateApiView(generics.CreateAPIView):
@@ -103,7 +118,7 @@ class CartViewSet(mixins.CreateModelMixin,
                    GenericViewSet):
     queryset = models.Cart.objects.prefetch_related(Prefetch(
         'items',
-        queryset=models.CartItem.objects.select_related('product__product')
+        queryset=models.CartItem.objects.select_related('product__base_product')
     )).all()
     serializer_class = CartSerialzier
 
@@ -124,7 +139,7 @@ class CartItemViewSet(ModelViewSet):
 
     def get_queryset(self):
         cart_pk = self.kwargs['cart_pk']
-        return models.CartItem.objects.filter(cart_id=cart_pk).select_related('product__product')
+        return models.CartItem.objects.filter(cart_id=cart_pk).select_related('product__base_product')
     
 
 class CustomerViewSet(ModelViewSet):

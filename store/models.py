@@ -229,22 +229,22 @@ class Product(models.Model):
     slug = models.SlugField()
 
     price = models.IntegerField()
-    price_after_discount = models.IntegerField()
-    discount_percent = models.PositiveIntegerField()
+    price_after_discount = models.IntegerField(null=True)
+    discount_percent = models.PositiveIntegerField(null=True)
 
-    start_discount_datetime = models.DateTimeField()
-    end_discount_datetime = models.DateTimeField()
+    start_discount_datetime = models.DateTimeField(null=True)
+    end_discount_datetime = models.DateTimeField(null=True)
 
-    length_package = models.IntegerField()
-    width_package = models.IntegerField()
-    height_package = models.IntegerField()
-    weight_package = models.IntegerField()
+    length_package = models.IntegerField(null=True, blank=True)
+    width_package = models.IntegerField(null=True, blank=True)
+    height_package = models.IntegerField(null=True, blank=True)
+    weight_package = models.IntegerField(null=True, blank=True)
 
     shenase_kala = models.CharField(max_length=14)
     barcode = models.CharField(max_length=16)
 
     def __str__(self):
-        return self.product.title_farsi
+        return self.base_product.title_farsi
     
 
 class ProductList(models.Model):
